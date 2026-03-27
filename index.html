@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>小六壬起卦</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8;
+  --card-bg: #fffdf7;
+  --ink: #2c1810;
+  --ink-light: #5a4a3a;
+  --ink-muted: #8a7a6a;
+  --gold: #c4a35a;
+  --gold-dark: #8b7332;
+  --red: #c23b22;
+  --green: #2d6a4f;
+  --green-light: #e8f5e9;
+  --blue: #1a5276;
+  --blue-light: #e3eef5;
+  --purple: #6b3a7d;
+  --purple-light: #f0e5f5;
+  --yellow-light: #fdf5e0;
+  --border: #d4c5a9;
+  --shadow: rgba(44, 24, 16, 0.08);
+  --radius: 12px;
+  --gap: 16px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg); color: var(--ink); min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(196,163,90,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(194,59,34,0.04) 0%, transparent 50%);
+}
+
+/* ---- Layout ---- */
+.container { max-width: 860px; margin: 0 auto; padding: 16px 16px 72px; }
+
+header { text-align: center; padding: 28px 0 20px; }
+header::before { content: '☰'; font-size: 24px; color: var(--gold); display: block; margin-bottom: 6px; letter-spacing: 10px; }
+h1 { font-family: 'Noto Serif SC', serif; font-size: 2em; font-weight: 900; letter-spacing: 6px; margin-bottom: 4px; }
+header .subtitle { font-size: 0.78em; color: var(--ink-muted); letter-spacing: 3px; }
+
+/* ---- Tabs ---- */
+.tabs { display: flex; justify-content: center; margin: 16px 0; border-bottom: 2px solid var(--border); }
+.tab {
+  padding: 10px 24px; font-size: 0.9em; font-weight: 500; color: var(--ink-light);
+  cursor: pointer; border: none; border-bottom: 3px solid transparent;
+  margin-bottom: -2px; transition: all 0.3s; background: none; font-family: inherit;
+}
+.tab.active { color: var(--red); border-bottom-color: var(--red); font-weight: 700; }
+
+/* ---- Cards ---- */
+.card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: var(--gap);
+  box-shadow: 0 2px 10px var(--shadow);
+}
+.card-title {
+  font-family: 'Noto Serif SC', serif; font-size: 0.95em;
+  color: var(--gold-dark); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ---- Time info ---- */
+.time-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 6px; }
+.time-row:last-child { margin-bottom: 0; }
+.time-label { font-size: 0.75em; color: var(--gold-dark); font-weight: 600; flex-shrink: 0; width: 56px; }
+.time-value { font-size: 0.85em; }
+
+/* ---- Mode panels ---- */
+.mode-panel { display: none; }
+.mode-panel.active { display: block; }
+
+.random-input { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.input-group { display: flex; flex-direction: column; gap: 3px; }
+.input-group label { font-size: 0.72em; color: var(--ink-muted); font-weight: 500; }
+.input-group input {
+  padding: 8px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 0.9em; font-family: inherit; background: var(--card-bg);
+  color: var(--ink); text-align: center; width: 100%;
+}
+.input-group input:focus { outline: none; border-color: var(--gold); }
+
+/* ---- Category ---- */
+.category-section { margin-bottom: var(--gap); }
+.category-section h3 {
+  font-family: 'Noto Serif SC', serif; font-size: 0.9em;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.cat-btn {
+  padding: 7px 4px; border: 1.5px solid var(--border); border-radius: 8px;
+  background: var(--card-bg); font-size: 0.82em; color: var(--ink-light);
+  cursor: pointer; transition: all 0.25s; font-family: inherit; text-align: center;
+}
+.cat-btn:hover { border-color: var(--gold); color: var(--ink); }
+.cat-btn.active { background: var(--red); color: #fff; border-color: var(--red); font-weight: 600; }
+
+/* ---- Divine button ---- */
+.btn-divine {
+  display: block; width: 100%; max-width: 320px; margin: 0 auto var(--gap);
+  padding: 12px; background: linear-gradient(135deg, var(--red), #a83219);
+  color: #fff; border: none; border-radius: 10px;
+  font-size: 1em; font-weight: 700; font-family: 'Noto Serif SC', serif;
+  letter-spacing: 4px; cursor: pointer; transition: all 0.3s;
+  box-shadow: 0 4px 16px rgba(194,59,34,0.25);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-divine:active { transform: scale(0.98); }
+
+/* ---- Results animation ---- */
+#results { animation: fadeUp 0.4s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+/* ---- Three palaces - horizontal scroll on mobile ---- */
+.three-palaces {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  margin-bottom: var(--gap); position: relative;
+}
+.three-palaces::before {
+  content: ''; position: absolute; top: 50%; left: 0; right: 0;
+  height: 2px; background: var(--border); z-index: 0;
+}
+.palace-card {
+  background: var(--card-bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 12px 8px; text-align: center;
+  box-shadow: 0 2px 8px var(--shadow); position: relative; z-index: 1;
+}
+.palace-label { font-size: 0.65em; color: var(--ink-muted); font-weight: 500; letter-spacing: 1px; }
+.palace-role { font-size: 0.62em; color: var(--gold-dark); margin-bottom: 6px; }
+.palace-icon { font-size: 1.2em; margin-bottom: 2px; }
+.palace-name {
+  font-family: 'Noto Serif SC', serif; font-size: 1.4em;
+  font-weight: 900; margin-bottom: 4px;
+}
+.palace-nature {
+  display: inline-block; padding: 2px 8px; border-radius: 20px;
+  font-size: 0.65em; font-weight: 600;
+}
+.palace-card.final { border-width: 2.5px; box-shadow: 0 3px 14px var(--shadow); }
+
+/* Gong colors */
+.gong-daan .palace-name { color: var(--green); }
+.gong-daan .palace-nature { background: var(--green-light); color: var(--green); }
+.gong-liulian .palace-name { color: #5a4a3a; }
+.gong-liulian .palace-nature { background: #f0ebe0; color: #5a4a3a; }
+.gong-suxi .palace-name { color: var(--gold-dark); }
+.gong-suxi .palace-nature { background: var(--yellow-light); color: var(--gold-dark); }
+.gong-chikou .palace-name { color: #c0392b; }
+.gong-chikou .palace-nature { background: #fce4e4; color: #c0392b; }
+.gong-xiaoji .palace-name { color: var(--blue); }
+.gong-xiaoji .palace-nature { background: var(--blue-light); color: var(--blue); }
+.gong-kongwang .palace-name { color: var(--purple); }
+.gong-kongwang .palace-nature { background: var(--purple-light); color: var(--purple); }
+
+/* ---- Process steps ---- */
+.process-step {
+  font-size: 0.82em; color: var(--ink-light);
+  padding: 6px 0 6px 10px; border-left: 2px solid var(--border); line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+/* ---- Analysis sections ---- */
+.analysis-section { margin-bottom: 12px; }
+.analysis-section:last-child { margin-bottom: 0; }
+.analysis-section h4 { font-size: 0.82em; color: var(--gold-dark); font-weight: 600; margin-bottom: 4px; }
+.analysis-section p { font-size: 0.84em; color: var(--ink-light); line-height: 1.7; }
+
+/* ---- Wuxing tags ---- */
+.wuxing-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.wuxing-tag {
+  padding: 3px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 500;
+  background: var(--yellow-light); color: var(--gold-dark);
+}
+
+/* ---- Shichen-Gong relation card ---- */
+.relation-card {
+  background: var(--card-bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: var(--gap);
+  box-shadow: 0 2px 10px var(--shadow);
+}
+.relation-header {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+.relation-element {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.relation-element .el-label { font-size: 0.68em; color: var(--ink-muted); }
+.relation-element .el-value {
+  font-family: 'Noto Serif SC', serif; font-size: 1.1em; font-weight: 700;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--border);
+}
+.relation-arrow {
+  font-size: 1.2em; color: var(--gold-dark); font-weight: 700;
+  display: flex; align-items: center; padding-top: 14px;
+}
+.relation-result {
+  text-align: center; font-size: 0.88em; font-weight: 600; padding: 8px 12px;
+  border-radius: 8px; margin-bottom: 10px;
+}
+.rel-sheng { background: var(--green-light); color: var(--green); }
+.rel-ke { background: #fce4e4; color: #c0392b; }
+.rel-same { background: var(--blue-light); color: var(--blue); }
+.rel-neutral { background: #f5f0e8; color: var(--ink-light); }
+.relation-detail { font-size: 0.82em; color: var(--ink-light); line-height: 1.7; }
+
+/* ---- Category verdict ---- */
+.cat-reading {
+  background: linear-gradient(135deg, var(--card-bg), #faf7f0);
+  border: 1.5px solid var(--gold); border-radius: var(--radius);
+  padding: 16px; margin-bottom: var(--gap);
+}
+.cat-reading h3 { font-family: 'Noto Serif SC', serif; font-size: 0.95em; color: var(--red); margin-bottom: 12px; }
+.verdict {
+  font-family: 'Noto Serif SC', serif; font-size: 1.2em; font-weight: 700;
+  text-align: center; padding: 10px; margin-bottom: 12px; border-radius: 8px;
+}
+.verdict-ji { background: var(--green-light); color: var(--green); }
+.verdict-xiong { background: #fce4e4; color: #c0392b; }
+.verdict-ping { background: var(--yellow-light); color: var(--gold-dark); }
+.cat-detail { font-size: 0.84em; color: var(--ink-light); line-height: 1.7; }
+
+footer { text-align: center; padding: 24px 0 8px; font-size: 0.7em; color: var(--ink-muted); }
+
+/* ---- Mobile ---- */
+@media (max-width: 480px) {
+  .container { padding: 12px 12px 60px; }
+  header { padding: 20px 0 14px; }
+  header::before { font-size: 20px; }
+  h1 { font-size: 1.6em; letter-spacing: 4px; }
+  header .subtitle { font-size: 0.7em; letter-spacing: 2px; }
+  .tab { padding: 8px 18px; font-size: 0.85em; }
+  .card { padding: 14px; }
+  .category-grid { grid-template-columns: repeat(4, 1fr); gap: 5px; }
+  .cat-btn { padding: 6px 2px; font-size: 0.78em; }
+  .palace-name { font-size: 1.2em !important; }
+  .palace-icon { font-size: 1em; }
+  .palace-label { font-size: 0.6em; }
+  .palace-role { font-size: 0.58em; }
+  .palace-nature { font-size: 0.6em; }
+  .wuxing-tag { font-size: 0.7em; padding: 2px 8px; }
+  .relation-element .el-value { width: 38px; height: 38px; font-size: 0.95em; }
+  .btn-divine { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>小六壬起卦</h1>
+    <div class="subtitle">大安·留连·速喜·赤口·小吉·空亡</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-mode="time">按当前时间</button>
+    <button class="tab" data-mode="random">按随机数字</button>
+  </div>
+
+  <div id="mode-time" class="mode-panel active">
+    <div class="card" id="timeInfo"></div>
+  </div>
+  <div id="mode-random" class="mode-panel">
+    <div class="card">
+      <div class="random-input">
+        <div class="input-group"><label>第一个数</label><input type="number" id="num1" min="1" placeholder="月" inputmode="numeric"></div>
+        <div class="input-group"><label>第二个数</label><input type="number" id="num2" min="1" placeholder="日" inputmode="numeric"></div>
+        <div class="input-group"><label>第三个数</label><input type="number" id="num3" min="1" placeholder="时" inputmode="numeric"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="category-section">
+    <h3>📌 所问事项（可选）</h3>
+    <div class="category-grid">
+      <button class="cat-btn" data-cat="general">综合</button>
+      <button class="cat-btn" data-cat="wealth">求财</button>
+      <button class="cat-btn" data-cat="love">婚恋</button>
+      <button class="cat-btn" data-cat="career">事业</button>
+      <button class="cat-btn" data-cat="travel">出行</button>
+      <button class="cat-btn" data-cat="health">疾病</button>
+      <button class="cat-btn" data-cat="lost">失物</button>
+      <button class="cat-btn" data-cat="lawsuit">诉讼</button>
+    </div>
+  </div>
+
+  <button class="btn-divine" onclick="divine()">起 卦</button>
+  <div id="results"></div>
+  <footer>小六壬 · 诸葛马前课 · 仅供参考娱乐</footer>
+</div>
+
+<script>
+// ============================================================
+// 农历 - 浏览器原生 Intl API，零依赖
+// ============================================================
+const LunarCalc = (() => {
+  const Animals = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
+  const dayNames = ['初一','初二','初三','初四','初五','初六','初七','初八','初九','初十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
+  const mMap = {'正月':1,'二月':2,'三月':3,'四月':4,'五月':5,'六月':6,'七月':7,'八月':8,'九月':9,'十月':10,'十一月':11,'十二月':12,'闰正月':1,'闰二月':2,'闰三月':3,'闰四月':4,'闰五月':5,'闰六月':6,'闰七月':7,'闰八月':8,'闰九月':9,'闰十月':10,'闰十一月':11,'闰十二月':12};
+
+  function solar2lunar(y, m, d) {
+    const parts = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', {year:'numeric',month:'long',day:'numeric'}).formatToParts(new Date(y, m-1, d));
+    const yearName = parts.find(p=>p.type==='yearName')?.value||'';
+    const monthStr = parts.find(p=>p.type==='month')?.value||'';
+    const dayNum = parseInt(parts.find(p=>p.type==='day')?.value||'1');
+    return {
+      ganZhiYear: yearName, animal: Animals[(y-4)%12],
+      lunarMonth: mMap[monthStr]||1, lunarDay: dayNum,
+      isLeap: monthStr.startsWith('闰'), monthName: monthStr,
+      dayName: dayNames[dayNum-1]||dayNum+'日'
+    };
+  }
+  return { solar2lunar };
+})();
+
+// ============================================================
+// 时辰
+// ============================================================
+const scNames = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const scRanges = ['23:00-01:00','01:00-03:00','03:00-05:00','05:00-07:00','07:00-09:00','09:00-11:00','11:00-13:00','13:00-15:00','15:00-17:00','17:00-19:00','19:00-21:00','21:00-23:00'];
+// 十二时辰对应五行
+const scElements = ['水','土','木','木','土','火','火','土','金','金','土','水'];
+function getShiChen(h) { return (h===23||h===0)?0:Math.floor((h+1)/2); }
+
+// ============================================================
+// 六宫数据
+// ============================================================
+const GONG = [
+  { name:'大安',pinyin:'daan',icon:'🟢',nature:'大吉',element:'木',position:'东方',deity:'青龙',
+    core:'身不动时，属木青龙，凡谋事一五七。',
+    general:'大安为首卦，象征平安稳定。事情发展平稳，宜静不宜动，守旧则吉。主事者为人正直，性格沉稳。',
+    categories:{
+      wealth:{verdict:'平吉',text:'求财宜守不宜进。正财可得，偏财难求。在现有基础上经营更佳，不宜冒险投资。'},
+      love:{verdict:'吉',text:'感情稳定和谐，主双方性格沉稳。已有对象者关系牢固，未婚者宜耐心等待。'},
+      career:{verdict:'吉',text:'事业稳健发展，宜在现有岗位深耕。升迁虽慢但稳，不宜跳槽或大幅变动。'},
+      travel:{verdict:'吉',text:'出行平安，路途顺畅。适合短途出行，长途亦无大碍。'},
+      health:{verdict:'平',text:'病情平稳，不会恶化。慢性病宜调养为主，急症会缓慢康复。'},
+      lost:{verdict:'可寻',text:'失物未远，在家中或原处附近寻找。物品可能在东方或左手边。'},
+      lawsuit:{verdict:'吉',text:'诉讼宜和解，拖延反而有利。对方无力纠缠，保持冷静等待即可。'},
+    }
+  },
+  { name:'留连',pinyin:'liulian',icon:'🟤',nature:'凶带小吉',element:'水',position:'北方',deity:'玄武',
+    core:'卒未归时，属水玄武，凡谋事二八十。',
+    general:'留连主拖延不决，事情反复纠缠。凡事不能速成，需耐心等待。暗中有阻碍，宜谨慎行事。',
+    categories:{
+      wealth:{verdict:'凶',text:'求财不利，资金易被拖欠或套牢。投资回报周期长，短期难见收益。'},
+      love:{verdict:'平',text:'感情纠缠不清，双方犹豫不决。可能存在暧昧关系，需要更多时间考验。'},
+      career:{verdict:'平凶',text:'工作进展缓慢，项目容易延期。与同事合作不顺畅，需更多沟通协调。'},
+      travel:{verdict:'凶',text:'出行多阻碍，容易迷路或延误。行程计划易变动，建议推迟。'},
+      health:{verdict:'凶',text:'病情反复，不易根治。治疗过程漫长，需换医生或治疗方案。'},
+      lost:{verdict:'难寻',text:'失物被人拿走或藏匿，短期难以找回。可能在北方或暗处、水边。'},
+      lawsuit:{verdict:'凶',text:'诉讼拖延日久，消耗精力财力。建议寻求调解。'},
+    }
+  },
+  { name:'速喜',pinyin:'suxi',icon:'🔴',nature:'吉',element:'火',position:'南方',deity:'朱雀',
+    core:'人即至时，属火朱雀，凡谋事三六九。',
+    general:'速喜主喜事将至，有好消息传来。事情发展迅速顺利，宜主动出击。与文书、信息有关的事尤为吉利。',
+    categories:{
+      wealth:{verdict:'大吉',text:'求财顺利，有意外之财。投资见效快，适合短线操作。'},
+      love:{verdict:'大吉',text:'桃花运旺，很快会有好消息。感情升温迅速，可能通过社交认识新对象。'},
+      career:{verdict:'大吉',text:'事业蒸蒸日上，有升迁或加薪的好消息。适合推动新项目。'},
+      travel:{verdict:'大吉',text:'出行顺利，旅途愉快。可能在途中遇到好事或贵人。'},
+      health:{verdict:'吉',text:'病情快速好转，治疗效果显著。选择的方案是正确的。'},
+      lost:{verdict:'可寻',text:'失物很快能找到，可能有人送回。在南方或高处寻找。'},
+      lawsuit:{verdict:'吉',text:'诉讼有利，很快有好的判决。有贵人帮助调解。'},
+    }
+  },
+  { name:'赤口',pinyin:'chikou',icon:'⚪',nature:'凶',element:'金',position:'西方',deity:'白虎',
+    core:'官事凶时，属金白虎，凡谋事四七十。',
+    general:'赤口为凶卦，主口舌是非、争执冲突。处理事情时容易遇到小人或发生争吵。建议保持冷静，谨言慎行。',
+    categories:{
+      wealth:{verdict:'大凶',text:'求财不利，破财之象。投资容易亏损，合伙易生争执。防因口舌之争损失钱财。'},
+      love:{verdict:'凶',text:'感情不和，争吵频繁。沟通困难，容易因言语伤害对方。慎防第三者挑拨。'},
+      career:{verdict:'凶',text:'工作中易遭小人暗算，与同事上司关系紧张。谈判合作不利，需低调行事。'},
+      travel:{verdict:'凶',text:'出行不利，途中易发生口角。可能遇到不愉快的事，建议推迟。'},
+      health:{verdict:'凶',text:'病情较重或诊断有误。注意呼吸系统和口腔疾病。宜求第二意见。'},
+      lost:{verdict:'难寻',text:'失物已被他人所得，找回困难。在西方或金属附近寻找，希望不大。'},
+      lawsuit:{verdict:'大凶',text:'诉讼非常不利，口舌是非缠身。建议尽快和解，避免对簿公堂。'},
+    }
+  },
+  { name:'小吉',pinyin:'xiaoji',icon:'🔵',nature:'吉',element:'水',position:'北方',deity:'六合',
+    core:'人来喜时，属水六合，凡谋事一五七。',
+    general:'小吉主人缘和合，事情小有成就。虽非大吉，但诸事顺遂。适合合作、交际、恋爱等人际往来之事。',
+    categories:{
+      wealth:{verdict:'吉',text:'求财顺利，小有收获。适合与人合作经营，人脉带来财路。'},
+      love:{verdict:'大吉',text:'感情和谐美满，双方情投意合。单身者有望遇到合适人选，婚事可成。'},
+      career:{verdict:'吉',text:'事业顺利，团队合作融洽。有小的晋升机会，贵人运佳。'},
+      travel:{verdict:'吉',text:'出行吉利，途中有好的际遇。适合结伴同行。'},
+      health:{verdict:'吉',text:'病情好转，身体逐渐恢复。听从医嘱配合治疗即可。'},
+      lost:{verdict:'可寻',text:'失物可寻回，可能有人帮助找到。在北方或近水处寻找。'},
+      lawsuit:{verdict:'吉',text:'诉讼可和解，双方容易达成共识。有调解人斡旋。'},
+    }
+  },
+  { name:'空亡',pinyin:'kongwang',icon:'⚫',nature:'凶',element:'土',position:'中央',deity:'勾陈',
+    core:'音信稀时，属土勾陈，凡谋事三六九。',
+    general:'空亡为凶卦，主事情落空、虚妄无实。所求之事难以实现，音信全无。不宜开展新事，宜等待时机。',
+    categories:{
+      wealth:{verdict:'大凶',text:'求财落空，竹篮打水一场空。投资血本无归，不宜借贷或担保。'},
+      love:{verdict:'凶',text:'感情空虚，对方心不在焉。追求者得不到回应，婚事难成。'},
+      career:{verdict:'凶',text:'事业无进展，计划难以推进。面试落选，项目搁浅。建议韬光养晦。'},
+      travel:{verdict:'凶',text:'出行不顺，可能白跑一趟。目的难以达成，不如不去。'},
+      health:{verdict:'凶',text:'病情不明或误诊，需仔细检查。虚症居多，注意精神状态。'},
+      lost:{verdict:'不可寻',text:'失物已丢失，无法找回。不必再费心寻找。'},
+      lawsuit:{verdict:'凶',text:'诉讼无望，证据不足或对方消失。官司难有结果。'},
+    }
+  }
+];
+
+// ============================================================
+// 五行生克
+// ============================================================
+const WX_SHENG = {'木':'火','火':'土','土':'金','金':'水','水':'木'};
+const WX_KE = {'木':'土','土':'水','水':'火','火':'金','金':'木'};
+const WX_COLORS = {'木':'var(--green)','火':'var(--red)','土':'var(--gold-dark)','金':'#8a7a6a','水':'var(--blue)'};
+const WX_BG = {'木':'var(--green-light)','火':'#fce4e4','土':'var(--yellow-light)','金':'#f0ebe0','水':'var(--blue-light)'};
+
+function getRelation(a, b) {
+  if (a === b) return 'same';
+  if (WX_SHENG[a] === b) return 'sheng'; // a生b
+  if (WX_KE[a] === b) return 'ke';       // a克b
+  if (WX_SHENG[b] === a) return 'bei_sheng'; // b生a (a被生)
+  if (WX_KE[b] === a) return 'bei_ke';       // b克a (a被克)
+  return 'neutral';
+}
+
+function getRelationText(scEl, gongEl, rel) {
+  const texts = {
+    sheng: `时辰五行（${scEl}）生落宫五行（${gongEl}），外部环境对事情有助力，顺势而为可成。`,
+    ke: `时辰五行（${scEl}）克落宫五行（${gongEl}），外部环境对事情有压制，需谨慎应对，不可强求。`,
+    bei_sheng: `落宫五行（${gongEl}）生时辰五行（${scEl}），事情本身的能量被外部消耗，易力不从心、事倍功半。`,
+    bei_ke: `落宫五行（${gongEl}）克时辰五行（${scEl}），事情对外部有制约力，当事人可掌控局面，但需消耗精力。`,
+    same: `时辰与落宫五行皆为${scEl}，同气相助、力量加倍。若为吉宫则更吉，若为凶宫则凶势加重。`,
+    neutral: `时辰五行（${scEl}）与落宫五行（${gongEl}）无直接生克，彼此影响较弱，事态发展主要看卦象本身。`
+  };
+  return texts[rel];
+}
+
+function getRelationLabel(rel) {
+  return {sheng:'相生（时生宫）',ke:'相克（时克宫）',bei_sheng:'泄气（宫生时）',bei_ke:'受制（宫克时）',same:'比和（同五行）',neutral:'无直接关系'}[rel];
+}
+
+function getRelationClass(rel) {
+  if (rel==='sheng'||rel==='bei_ke') return 'rel-sheng';
+  if (rel==='ke'||rel==='bei_sheng') return 'rel-ke';
+  if (rel==='same') return 'rel-same';
+  return 'rel-neutral';
+}
+
+// ============================================================
+// 起卦
+// ============================================================
+function calcGong(n1,n2,n3) {
+  const mg=(n1-1)%6, dg=(mg+n2-1)%6, tg=(dg+n3-1)%6;
+  return {monthGong:mg, dayGong:dg, timeGong:tg};
+}
+
+// ============================================================
+// UI
+// ============================================================
+let selectedCategory='general', currentMode='time';
+
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    currentMode=tab.dataset.mode;
+    document.querySelectorAll('.mode-panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('mode-'+currentMode).classList.add('active');
+  });
+});
+
+document.querySelectorAll('.cat-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedCategory=btn.dataset.cat;
+  });
+});
+
+function updateTimeInfo() {
+  const now=new Date();
+  const lunar=LunarCalc.solar2lunar(now.getFullYear(),now.getMonth()+1,now.getDate());
+  const sc=getShiChen(now.getHours());
+  const pad=n=>String(n).padStart(2,'0');
+  document.getElementById('timeInfo').innerHTML=`
+    <div class="time-row"><span class="time-label">公历</span><span class="time-value">${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}</span></div>
+    <div class="time-row"><span class="time-label">农历</span><span class="time-value">${lunar.ganZhiYear}年（${lunar.animal}） ${lunar.monthName}${lunar.dayName}</span></div>
+    <div class="time-row"><span class="time-label">时辰</span><span class="time-value">${scNames[sc]}时 (${scRanges[sc]}) · 五行属${scElements[sc]}</span></div>
+  `;
+}
+updateTimeInfo();
+setInterval(updateTimeInfo,1000);
+
+function divine() {
+  let n1,n2,n3,processText,scIdx=-1;
+  if (currentMode==='time') {
+    const now=new Date();
+    const lunar=LunarCalc.solar2lunar(now.getFullYear(),now.getMonth()+1,now.getDate());
+    scIdx=getShiChen(now.getHours());
+    n1=lunar.lunarMonth; n2=lunar.lunarDay; n3=scIdx+1;
+    const {monthGong:mg,dayGong:dg,timeGong:tg}=calcGong(n1,n2,n3);
+    processText=[
+      `从【大安】起正月，顺数到农历【${lunar.monthName}】（第${n1}个），落在【${GONG[mg].name}】`,
+      `从月上【${GONG[mg].name}】起初一，顺数到【${lunar.dayName}】（第${n2}个），落在【${GONG[dg].name}】`,
+      `从日上【${GONG[dg].name}】起子时，顺数到【${scNames[scIdx]}时】（第${n3}个），最终落在【${GONG[tg].name}】`
+    ];
+  } else {
+    n1=parseInt(document.getElementById('num1').value)||1;
+    n2=parseInt(document.getElementById('num2').value)||1;
+    n3=parseInt(document.getElementById('num3').value)||1;
+    const {monthGong:mg,dayGong:dg,timeGong:tg}=calcGong(n1,n2,n3);
+    processText=[
+      `从【大安】起，顺数第一个数【${n1}】，落在【${GONG[mg].name}】`,
+      `从【${GONG[mg].name}】起，顺数第二个数【${n2}】，落在【${GONG[dg].name}】`,
+      `从【${GONG[dg].name}】起，顺数第三个数【${n3}】，最终落在【${GONG[tg].name}】`
+    ];
+  }
+  const {monthGong,dayGong,timeGong}=calcGong(n1,n2,n3);
+  renderResults(GONG[monthGong],GONG[dayGong],GONG[timeGong],processText,scIdx);
+}
+
+function renderResults(g1,g2,g3,processText,scIdx) {
+  const cat=selectedCategory;
+  const catN={general:'综合',wealth:'求财',love:'婚恋',career:'事业',travel:'出行',health:'疾病',lost:'失物',lawsuit:'诉讼'};
+  let h='<div id="results">';
+
+  // Three palaces
+  h+='<div class="three-palaces">';
+  h+=pCard(g1,'第一宫','起因·背景',false);
+  h+=pCard(g2,'第二宫','经过·发展',false);
+  h+=pCard(g3,'第三宫','结果·现状',true);
+  h+='</div>';
+
+  // Process
+  h+=`<div class="card"><div class="card-title">📐 推算过程</div>
+    ${processText.map((t,i)=>`<div class="process-step">${'①②③'[i]} ${t}</div>`).join('')}
+  </div>`;
+
+  // Shichen-Gong wuxing relation (only for time mode)
+  if (scIdx >= 0) {
+    const scEl = scElements[scIdx];
+    const gongEl = g3.element;
+    const rel = getRelation(scEl, gongEl);
+    const relLabel = getRelationLabel(rel);
+    const relClass = getRelationClass(rel);
+    const relText = getRelationText(scEl, gongEl, rel);
+
+    h+=`<div class="relation-card">
+      <div class="card-title">⚖️ 时辰与落宫生克</div>
+      <div class="relation-header">
+        <div class="relation-element">
+          <span class="el-label">${scNames[scIdx]}时</span>
+          <span class="el-value" style="color:${WX_COLORS[scEl]};border-color:${WX_COLORS[scEl]};background:${WX_BG[scEl]}">${scEl}</span>
+        </div>
+        <div class="relation-arrow">→</div>
+        <div class="relation-element">
+          <span class="el-label">${g3.name}</span>
+          <span class="el-value" style="color:${WX_COLORS[gongEl]};border-color:${WX_COLORS[gongEl]};background:${WX_BG[gongEl]}">${gongEl}</span>
+        </div>
+      </div>
+      <div class="relation-result ${relClass}">${relLabel}</div>
+      <div class="relation-detail">${relText}</div>
+    </div>`;
+  }
+
+  // Three palace story
+  h+=`<div class="card"><div class="card-title">📖 三宫综合解读</div>
+    <div class="analysis-section"><h4>▸ 起因（${g1.name}）</h4><p>${storyI[g1.name]||g1.general}</p></div>
+    <div class="analysis-section"><h4>▸ 经过（${g2.name}）</h4><p>${storyM[g2.name]||g2.general}</p></div>
+    <div class="analysis-section"><h4>▸ 结果（${g3.name}）</h4><p>${g3.general}</p></div>
+  </div>`;
+
+  // Wuxing & deity
+  h+=`<div class="card"><div class="card-title">🔥 五行与六神</div>
+    <div class="wuxing-row">
+      <span class="wuxing-tag">${g1.name} ${g1.element}·${g1.deity}</span>
+      <span class="wuxing-tag">${g2.name} ${g2.element}·${g2.deity}</span>
+      <span class="wuxing-tag">${g3.name} ${g3.element}·${g3.deity}</span>
+    </div>
+    <div class="analysis-section" style="margin-top:10px;"><p>${wxAnalysis(g1,g2,g3)}</p></div>
+  </div>`;
+
+  // Category
+  if (cat!=='general') {
+    const r=g3.categories[cat];
+    const vc=r.verdict.includes('吉')?'verdict-ji':r.verdict.includes('凶')?'verdict-xiong':'verdict-ping';
+    h+=`<div class="cat-reading"><h3>🔮 ${catN[cat]}详断（${g3.name}）</h3>
+      <div class="verdict ${vc}">${r.verdict}</div><div class="cat-detail">${r.text}</div></div>`;
+  } else {
+    h+=`<div class="card"><div class="card-title">🔮 各事项速查（${g3.name}）</div>
+      ${Object.entries(g3.categories).map(([k,v])=>`<div class="analysis-section"><h4>▸ ${catN[k]}：${v.verdict}</h4><p>${v.text}</p></div>`).join('')}
+    </div>`;
+  }
+
+  h+='</div>';
+  document.getElementById('results').outerHTML=h;
+}
+
+const gColors={daan:'var(--green)',liulian:'#5a4a3a',suxi:'var(--gold-dark)',chikou:'#c0392b',xiaoji:'var(--blue)',kongwang:'var(--purple)'};
+
+function pCard(g,label,role,fin) {
+  return `<div class="palace-card gong-${g.pinyin} ${fin?'final':''}" ${fin?`style="border-color:${gColors[g.pinyin]}"`:''}> 
+    <div class="palace-label">${label}</div><div class="palace-role">${role}</div>
+    <div class="palace-icon">${g.icon}</div><div class="palace-name">${g.name}</div>
+    <span class="palace-nature">${g.nature}</span></div>`;
+}
+
+const storyI={
+  '大安':'事情起因平稳，源于日常稳定的状态。当事人心态沉稳，基础扎实，起初并无波折。',
+  '留连':'事情起因复杂，可能源于遗留问题或反复犹豫。一开始就有拖延迹象，情况不够明朗。',
+  '速喜':'事情起因积极，可能源于好消息或突然的机遇。一开始充满希望，当事人心态乐观。',
+  '赤口':'事情起因不佳，可能源于口舌争执或误解。一开始就存在矛盾和冲突的种子。',
+  '小吉':'事情起因和谐，源于良好的人际关系或合作机会。一开始就有贵人相助。',
+  '空亡':'事情起因虚浮，可能建立在不实际的期望上。一开始就缺乏实质基础。',
+};
+const storyM={
+  '大安':'发展过程平稳有序，虽然进度不快但稳步推进。中间没有太大波折。',
+  '留连':'发展过程曲折反复，多次出现拖延和变化。中间可能遇到阻碍，需要耐心。',
+  '速喜':'发展过程顺利快速，不断有好消息传来。进展超出预期，贵人和机遇接连出现。',
+  '赤口':'发展过程中出现争执和矛盾，沟通不畅。可能遇到小人阻挠或言语冲突。',
+  '小吉':'发展过程顺利和谐，得到他人帮助和支持。团队协作良好，关系融洽。',
+  '空亡':'发展过程中出现脱节或落空。原本的计划难以推进，中途可能失去方向。',
+};
+
+function wxAnalysis(g1,g2,g3) {
+  const r=[];
+  if(WX_SHENG[g1.element]===g2.element) r.push(`${g1.name}（${g1.element}）生${g2.name}（${g2.element}），起因推动发展`);
+  if(WX_KE[g1.element]===g2.element) r.push(`${g1.name}（${g1.element}）克${g2.name}（${g2.element}），起因制约发展`);
+  if(WX_SHENG[g2.element]===g3.element) r.push(`${g2.name}（${g2.element}）生${g3.name}（${g3.element}），过程推动结果向好`);
+  if(WX_KE[g2.element]===g3.element) r.push(`${g2.name}（${g2.element}）克${g3.name}（${g3.element}），过程对结果有阻碍`);
+  if(WX_SHENG[g1.element]===g3.element) r.push(`${g1.name}（${g1.element}）生${g3.name}（${g3.element}），起因直接助益结果`);
+  if(WX_KE[g1.element]===g3.element) r.push(`${g1.name}（${g1.element}）克${g3.name}（${g3.element}），起因对结果不利`);
+  if(!r.length) r.push(`三宫五行（${g1.element}、${g2.element}、${g3.element}）无直接生克，各自独立发展`);
+  return r.join('。')+`。六神：${g1.deity}起事，${g2.deity}发展，${g3.deity}主结果。`;
+}
+</script>
+</body>
+</html>
