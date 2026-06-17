@@ -1,8 +1,8 @@
-import { formatCurrentTime, getShiChenIndex, SHICHEN_NAMES, SHICHEN_ELEMENTS } from './lunar.js';
+import { formatCurrentTime, getShiChenIndex, SHICHEN_NAMES } from './lunar.js';
 import { calcGong } from './core.js';
 import { PALACES } from './readings/data.js';
-import { buildReading, buildShichenRelation } from './readings/interpreters.js';
-import { renderReading } from './renderer.js';
+import { buildReading } from './readings/interpreter.js';
+import { renderResults } from './renderer.js';
 
 let selectedCategory = 'general';
 let currentMode = 'time';
@@ -40,7 +40,6 @@ function bindCategories() {
 
 function getNumbersFromMode() {
   let n1, n2, n3, processText, shichenIndex = -1;
-
   if (currentMode === 'time') {
     const now = new Date();
     const info = formatCurrentTime(now);
@@ -56,9 +55,9 @@ function getNumbersFromMode() {
       `从日上【${PALACES[result.dayKey].name}】起子时，顺数到【${SHICHEN_NAMES[shichenIndex]}时】（第${n3}个），最终落在【${PALACES[result.timeKey].name}】`
     ];
   } else {
-    n1 = parseInt(document.getElementById('num1').value, 10) || 1;
-    n2 = parseInt(document.getElementById('num2').value, 10) || 1;
-    n3 = parseInt(document.getElementById('num3').value, 10) || 1;
+    n1 = Math.max(1, parseInt(document.getElementById('num1').value, 10) || 1);
+    n2 = Math.max(1, parseInt(document.getElementById('num2').value, 10) || 1);
+    n3 = Math.max(1, parseInt(document.getElementById('num3').value, 10) || 1);
     const result = calcGong(n1, n2, n3);
     processText = [
       `从【大安】起，顺数第一个数【${n1}】，落在【${PALACES[result.monthKey].name}】`,
@@ -66,30 +65,23 @@ function getNumbersFromMode() {
       `从【${PALACES[result.dayKey].name}】起，顺数第三个数【${n3}】，最终落在【${PALACES[result.timeKey].name}】`
     ];
   }
-
   return { n1, n2, n3, processText, shichenIndex };
 }
 
 function divine() {
   const { n1, n2, n3, processText, shichenIndex } = getNumbersFromMode();
   const result = calcGong(n1, n2, n3);
-  const first = PALACES[result.monthKey];
-  const middle = PALACES[result.dayKey];
-  const final = PALACES[result.timeKey];
-  const shichenElement = shichenIndex >= 0 ? SHICHEN_ELEMENTS[shichenIndex] : null;
-  const shichenRelation = buildShichenRelation(shichenElement, final);
-  const report = buildReading({ category: selectedCategory, first, middle, final, shichenRelation });
-
-  renderReading({
-    report,
-    processText,
-    shichenName: shichenIndex >= 0 ? SHICHEN_NAMES[shichenIndex] : '',
-    shichenElement
+  const reading = buildReading({
+    categoryKey: selectedCategory,
+    monthKey: result.monthKey,
+    dayKey: result.dayKey,
+    timeKey: result.timeKey,
+    scIdx: shichenIndex
   });
+  renderResults(reading, processText);
 }
 
 window.divine = divine;
-
 bindTabs();
 bindCategories();
 updateTimeInfo();
