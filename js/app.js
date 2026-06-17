@@ -1,102 +1,15 @@
-import { formatCurrentTime, solarToLunar, getShiChenIndex, SHICHEN_NAMES } from './lunar.js';
-import { calcGong } from './core.js';
-import { PALACES, CATEGORY_NAMES } from './readings/data.js';
+import { formatCurrentTime, solarToLunar, getShiChenIndex, SHICHEN_NAMES, SHICHEN_ELEMENTS } from './lunar.js';
+import { calcGong, getRelation, getRelationLabel, describeRelation } from './core.js';
+import { PALACES } from './readings/data.js';
 import { buildReading } from './readings/interpreter.js';
-import { renderResults } from './renderer.js';
+import { renderResults, renderCategoryButtons } from './renderer.js';
 
 let selectedCategory = 'general';
 let currentMode = 'time';
-
-function updateTimeInfo() {
-  const info = formatCurrentTime(new Date());
-  document.getElementById('timeInfo').innerHTML = `
-    <div class="time-row"><span class="time-label">公历</span><span class="time-value">${info.solar}</span></div>
-    <div class="time-row"><span class="time-label">农历</span><span class="time-value">${info.lunar}</span></div>
-    <div class="time-row"><span class="time-label">时辰</span><span class="time-value">${info.shichen}</span></div>
-  `;
-}
-
-function bindTabs() {
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      currentMode = tab.dataset.mode;
-      document.querySelectorAll('.mode-panel').forEach(panel => panel.classList.remove('active'));
-      document.getElementById(`mode-${currentMode}`).classList.add('active');
-    });
-  });
-}
-
-function bindCategories() {
-  document.querySelectorAll('.cat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedCategory = btn.dataset.cat;
-    });
-  });
-}
-
-function buildProcessForTime(n1, n2, n3, scIdx, gong) {
-  const now = new Date();
-  const lunar = solarToLunar(now);
-  return [
-    `从【大安】起正月，顺数到农历【${lunar.monthName}】（第${n1}个），落在【${PALACES[gong.monthKey].name}】`,
-    `从月上【${PALACES[gong.monthKey].name}】起初一，顺数到【${lunar.dayName}】（第${n2}个），落在【${PALACES[gong.dayKey].name}】`,
-    `从日上【${PALACES[gong.dayKey].name}】起子时，顺数到【${SHICHEN_NAMES[scIdx]}时】（第${n3}个），最终落在【${PALACES[gong.timeKey].name}】`
-  ];
-}
-
-function buildProcessForRandom(n1, n2, n3, gong) {
-  return [
-    `从【大安】起，顺数第一个数【${n1}】，落在【${PALACES[gong.monthKey].name}】`,
-    `从【${PALACES[gong.monthKey].name}】起，顺数第二个数【${n2}】，落在【${PALACES[gong.dayKey].name}】`,
-    `从【${PALACES[gong.dayKey].name}】起，顺数第三个数【${n3}】，最终落在【${PALACES[gong.timeKey].name}】`
-  ];
-}
-
-function divine() {
-  let n1;
-  let n2;
-  let n3;
-  let scIdx = -1;
-  let processText;
-
-  if (currentMode === 'time') {
-    const now = new Date();
-    const lunar = solarToLunar(now);
-    scIdx = getShiChenIndex(now.getHours());
-    n1 = lunar.lunarMonth;
-    n2 = lunar.lunarDay;
-    n3 = scIdx + 1;
-    const gong = calcGong(n1, n2, n3);
-    processText = buildProcessForTime(n1, n2, n3, scIdx, gong);
-    renderResults(buildReading({ categoryKey: selectedCategory, ...gong, scIdx }), processText);
-  } else {
-    n1 = parseInt(document.getElementById('num1').value, 10) || 1;
-    n2 = parseInt(document.getElementById('num2').value, 10) || 1;
-    n3 = parseInt(document.getElementById('num3').value, 10) || 1;
-    const gong = calcGong(n1, n2, n3);
-    processText = buildProcessForRandom(n1, n2, n3, gong);
-    renderResults(buildReading({ categoryKey: selectedCategory, ...gong, scIdx }), processText);
-  }
-}
-
-function renderCategoryButtons() {
-  const grid = document.getElementById('categoryGrid');
-  grid.innerHTML = Object.entries(CATEGORY_NAMES).map(([key, name]) =>
-    `<button class="cat-btn ${key === selectedCategory ? 'active' : ''}" data-cat="${key}">${name}</button>`
-  ).join('');
-  bindCategories();
-}
-
-function init() {
-  renderCategoryButtons();
-  bindTabs();
-  updateTimeInfo();
-  setInterval(updateTimeInfo, 1000);
-  document.getElementById('divineBtn').addEventListener('click', divine);
-}
-
+function updateTimeInfo(){ const info=formatCurrentTime(new Date()); document.getElementById('timeInfo').innerHTML=`<div class="time-row"><span class="time-label">公历</span><span class="time-value">${info.solar}</span></div><div class="time-row"><span class="time-label">农历</span><span class="time-value">${info.lunar}</span></div><div class="time-row"><span class="time-label">时辰</span><span class="time-value">${info.shichen}</span></div>`; }
+function bindTabs(){ document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active'); currentMode=tab.dataset.mode; document.querySelectorAll('.mode-panel').forEach(p=>p.classList.remove('active')); document.getElementById(`mode-${currentMode}`).classList.add('active'); })); }
+function bindCategories(){ const grid=document.getElementById('categoryGrid'); grid.innerHTML=renderCategoryButtons(selectedCategory); grid.addEventListener('click',e=>{ const btn=e.target.closest('.cat-btn'); if(!btn)return; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); selectedCategory=btn.dataset.cat; }); }
+function getInput(){ let n1,n2,n3,scIdx=-1,processText; if(currentMode==='time'){ const now=new Date(); const lunar=solarToLunar(now); scIdx=getShiChenIndex(now.getHours()); n1=lunar.lunarMonth; n2=lunar.lunarDay; n3=scIdx+1; const g=calcGong(n1,n2,n3); processText=[`从【大安】起正月，顺数到农历【${lunar.monthName}】（第${n1}个），落在【${PALACES[g.monthKey].name}】`,`从月上【${PALACES[g.monthKey].name}】起初一，顺数到【${lunar.dayName}】（第${n2}个），落在【${PALACES[g.dayKey].name}】`,`从日上【${PALACES[g.dayKey].name}】起子时，顺数到【${SHICHEN_NAMES[scIdx]}时】（第${n3}个），最终落在【${PALACES[g.timeKey].name}】`]; } else { n1=parseInt(document.getElementById('num1').value,10)||1; n2=parseInt(document.getElementById('num2').value,10)||1; n3=parseInt(document.getElementById('num3').value,10)||1; const g=calcGong(n1,n2,n3); processText=[`从【大安】起，顺数第一个数【${n1}】，落在【${PALACES[g.monthKey].name}】`,`从【${PALACES[g.monthKey].name}】起，顺数第二个数【${n2}】，落在【${PALACES[g.dayKey].name}】`,`从【${PALACES[g.dayKey].name}】起，顺数第三个数【${n3}】，最终落在【${PALACES[g.timeKey].name}】`]; } return {n1,n2,n3,scIdx,processText}; }
+function divine(){ const input=getInput(); const keys=calcGong(input.n1,input.n2,input.n3); const first=PALACES[keys.monthKey], middle=PALACES[keys.dayKey], final=PALACES[keys.timeKey]; const shichenElement=input.scIdx>=0?SHICHEN_ELEMENTS[input.scIdx]:null; const report=buildReading({category:selectedCategory,first,middle,final,shichenElement}); let scInfo=null; if(input.scIdx>=0){ const rel=getRelation(shichenElement,final.element); scInfo={index:input.scIdx,rel,label:getRelationLabel(rel),text:describeRelation(shichenElement,final.element,rel,`${SHICHEN_NAMES[input.scIdx]}时`,final.name)}; } renderResults({first,middle,final,processText:input.processText,report,scInfo}); }
+function init(){ bindTabs(); bindCategories(); updateTimeInfo(); setInterval(updateTimeInfo,1000); document.getElementById('divineBtn').addEventListener('click',divine); }
 init();
