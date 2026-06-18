@@ -24,6 +24,28 @@
   padding: 22px;
 }
 
+.category-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.category-grid::-webkit-scrollbar {
+  width: 5px;
+}
+
+.category-grid::-webkit-scrollbar-thumb {
+  background: rgba(140, 111, 40, .25);
+  border-radius: 999px;
+}
+
+.cat-btn {
+  min-height: 36px;
+  line-height: 1.25;
+  white-space: normal;
+}
+
 .palace-track-section .three-palaces {
   margin: 12px 0 2px;
 }
@@ -87,6 +109,12 @@
 @media (max-width: 720px) {
   .report-area {
     padding: 14px;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-height: none;
+    overflow: visible;
   }
 
   .detail-grid,
