@@ -10,39 +10,61 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1>小六壬起卦</h1>
-    <div class="subtitle">三宫详断 · 五行生克 · 分类问事</div>
-  </header>
+<div class="app-shell">
+  <aside class="sidebar">
+    <header class="brand">
+      <h1>小六壬起卦</h1>
+      <div class="subtitle">三宫详断 · 指引方向</div>
+    </header>
 
-  <div class="tabs">
-    <button class="tab active" data-mode="time">按当前时间</button>
-    <button class="tab" data-mode="random">按随机数字</button>
-  </div>
+    <section class="panel">
+      <h2>起卦方式</h2>
+      <div class="tabs segmented">
+        <button class="tab active" data-mode="time">时间起卦</button>
+        <button class="tab" data-mode="random">数字起卦</button>
+      </div>
 
-  <div id="mode-time" class="mode-panel active">
-    <div class="card" id="timeInfo"></div>
-  </div>
+      <div id="mode-time" class="mode-panel active">
+        <h3>当前时间</h3>
+        <div id="timeInfo" class="time-card"></div>
+      </div>
 
-  <div id="mode-random" class="mode-panel">
-    <div class="card">
-      <div class="random-input">
-        <div class="input-group"><label>第一个数</label><input type="number" id="num1" min="1" placeholder="月" inputmode="numeric"></div>
-        <div class="input-group"><label>第二个数</label><input type="number" id="num2" min="1" placeholder="日" inputmode="numeric"></div>
-        <div class="input-group"><label>第三个数</label><input type="number" id="num3" min="1" placeholder="时" inputmode="numeric"></div>
+      <div id="mode-random" class="mode-panel">
+        <h3>输入三个数字</h3>
+        <div class="random-input">
+          <div class="input-group"><label>一数</label><input type="number" id="num1" min="1" placeholder="月" inputmode="numeric"></div>
+          <div class="input-group"><label>二数</label><input type="number" id="num2" min="1" placeholder="日" inputmode="numeric"></div>
+          <div class="input-group"><label>三数</label><input type="number" id="num3" min="1" placeholder="时" inputmode="numeric"></div>
+        </div>
+      </div>
+
+      <h3>所问事项</h3>
+      <div class="category-grid" id="categoryGrid"></div>
+
+      <button class="btn-divine" id="divineBtn">开始起卦</button>
+    </section>
+
+    <section class="panel info-panel">
+      <h2>当前时辰</h2>
+      <div id="shichenBrief" class="shichen-brief">等待时间信息...</div>
+    </section>
+
+    <section class="panel info-panel">
+      <h2>使用说明</h2>
+      <p>选择时间或输入数字后点击“开始起卦”，系统将生成三宫卦象并给出分层解读。</p>
+    </section>
+  </aside>
+
+  <main class="report-area">
+    <div id="results" class="empty-state">
+      <div class="empty-card">
+        <div class="empty-mark">☯</div>
+        <h2>等待起卦</h2>
+        <p>选择起卦方式与所问事项后，点击“开始起卦”。</p>
       </div>
     </div>
-  </div>
-
-  <div class="category-section">
-    <h3>📌 所问事项</h3>
-    <div class="category-grid" id="categoryGrid"></div>
-  </div>
-
-  <button class="btn-divine" id="divineBtn">起 卦</button>
-  <div id="results"></div>
-  <footer>小六壬 · 传统文化与娱乐参考 · 不构成现实决策建议</footer>
+    <footer>小六壬 · 传统文化与娱乐参考 · 不构成现实决策建议</footer>
+  </main>
 </div>
 <script type="module" src="js/app.js"></script>
 </body>
