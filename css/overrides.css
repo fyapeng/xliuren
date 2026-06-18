@@ -1,0 +1,101 @@
+/* Layout refinements layered on top of style.css */
+
+.app-shell {
+  max-width: 1400px;
+  grid-template-columns: 292px minmax(0, 1fr);
+  gap: 24px;
+}
+
+.report-area {
+  max-width: 1060px;
+  width: 100%;
+  justify-self: center;
+  padding: 24px;
+}
+
+.result-section {
+  margin-bottom: 28px !important;
+}
+
+.card,
+.relation-card,
+.cat-reading,
+.overview-card {
+  padding: 22px;
+}
+
+.palace-track-section .three-palaces {
+  margin: 12px 0 2px;
+}
+
+.track-card {
+  min-height: 245px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.track-card .palace-icon {
+  margin-top: 6px;
+}
+
+.palace-desc {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--soft);
+  color: #514336;
+  font-size: 0.92em;
+  line-height: 1.85;
+}
+
+.section-grid,
+.insight-grid,
+.advice-list {
+  gap: 16px;
+}
+
+.detail-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.insight-grid,
+.advice-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.reading-section,
+.insight-box,
+.advice-box {
+  padding: 18px;
+}
+
+.reading-section p,
+.insight-box p,
+.advice-box li,
+.analysis-section p,
+.relation-detail {
+  line-height: 1.9;
+}
+
+@media (max-width: 1100px) {
+  .report-area {
+    max-width: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .report-area {
+    padding: 14px;
+  }
+
+  .detail-grid,
+  .insight-grid,
+  .advice-list {
+    grid-template-columns: 1fr;
+  }
+
+  .track-card {
+    min-height: auto;
+  }
+}
