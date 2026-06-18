@@ -22,6 +22,7 @@ const PERSONA = {
   lawsuit:{青龙:'正式材料、正当渠道较有利。',玄武:'隐情、证据缺口或信息不明。',朱雀:'沟通、文书、措辞是关键。',白虎:'对抗强，容易升级。',六合:'协商、调解空间仍在。',勾陈:'流程拖延、旧问题牵连。'}
 };
 const SPEED = {快速:2,'急而冲':2,渐进:1,'慢而稳':0,'迟缓反复':-1,'虚而停':-2};
+const uniq = items => [...new Set(items.filter(Boolean))];
 
 export function buildDeityInsight(first,middle,final,category){
   return [first,middle,final].map((g,i)=>({stage:['起因','经过','结果'][i], palace:g.name, deity:g.deity, tone:DEITY[g.deity].tone, symbol:DEITY[g.deity].symbol, text:`【${g.deity}】主${DEITY[g.deity].symbol}；在${['起因','经过','结果'][i]}位，表示${PERSONA[category]?.[g.deity] || DEITY[g.deity].use}`}));
@@ -39,7 +40,9 @@ export function buildPersonaInsight(first,middle,final,category){
 }
 export function buildLocationInsight(final,category){
   const categoryHint={wealth:'财务资料、付款渠道、交易记录附近',love:'常联系地点、社交软件、共同活动场景',career:'办公区、文件系统、会议沟通场景',paper:'投稿系统、编辑邮件、审稿意见、返修文档、参考文献与方法部分',exam:'错题本、教材、考试通知、座位与考场路线',interview:'简历、作品集、面试邮件、岗位JD、HR沟通记录',reunion:'聊天记录、共同好友、旧照片、常联系软件、共同活动地点',studyabroad:'申请系统、推荐信、文书、成绩单、邮件与截止日期',startup:'用户反馈、财务表、产品原型、合伙协议、渠道资源',travel:'票据、导航、行李、交通节点',health:'作息、饮食、休息环境',lost:'最后使用处、收纳处、遮挡处',lawsuit:'合同、聊天记录、邮件、材料归档处'};
-  return {direction:final.position, places:final.image.place, objects:final.image.object, hint:categoryHint[category]||'与当前所问事项直接相关的现实场景'};
+  const places = uniq([final.position, ...final.image.place]);
+  const objects = uniq(final.image.object);
+  return {direction:final.position, places, objects, hint:categoryHint[category]||'与当前所问事项直接相关的现实场景'};
 }
 export function buildAdvancedInsights({first,middle,final,category,score,wuxing}){
   return {deity:buildDeityInsight(first,middle,final,category),timing:buildTimingInsight(first,middle,final,score,wuxing),persona:buildPersonaInsight(first,middle,final,category),location:buildLocationInsight(final,category)};
