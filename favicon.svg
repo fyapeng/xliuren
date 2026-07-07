@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Xiao Liu Ren">
+  <rect width="64" height="64" rx="12" fill="#273238"/>
+  <path d="M17 17h9l7 10 7-10h8L37 32l12 15h-9l-8-10-8 10h-8l12-15z" fill="#f8fafc"/>
+  <path d="M17 54h30" stroke="#c0843d" stroke-width="4" stroke-linecap="round"/>
+</svg>
